@@ -7,7 +7,7 @@
     "license": "MIT",
     "scripts": {
         "run:no_auth": "node examples_sites/no_auth/index.js",
-        "run:no_auth": "node examples_sites/auth/index.js",
+        "run:auth": "node examples_sites/auth/index.js",
         "test:auth": "forever start examples_sites/auth/index.js && nightwatch spec/auth.js && forever stopall",
         "test:no_auth": "forever start examples_sites/no_auth/index.js && nightwatch spec/no_auth.js && forever stopall",
         "spec:auth": "nightwatch spec/auth.js",
