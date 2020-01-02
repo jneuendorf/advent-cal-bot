@@ -10,6 +10,7 @@ const LocalStrategy = require('passport-local').Strategy
 // See http://www.passportjs.org/docs/username-password/
 passport.use(new LocalStrategy(function(username, password, done) {
     if (username === 'test' && password === 'test') {
+        console.log('authentication successful')
         done(null, {username, password})
     }
     else {
