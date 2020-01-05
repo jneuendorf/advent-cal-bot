@@ -27,44 +27,65 @@ const done = () => browser => browser.end()
 
 
 const defaultSelectors = {
-    username: 'input[type="text"]', 
+    username: 'input[type="text"]',
     password: 'input[type="password"]',
     submitButton: 'button[type="submit"]',
 }
-const auth = (username, password, {
-                     selectors=defaultSelectors, 
-                     submit=true,
-                     waitForElement='body',
-                    }={}) => {
-    return browser => {
-        if (waitForElement) {
-            browser.waitForElementVisible(waitForElement)
-        }
-        
-        browser.setValue(selectors.username, username)
-        browser.setValue(selectors.password, password)
-        if (submit) {
-            browser.click(selectors.submitButton)
+const auth = (
+    username,
+    password,
+    {
+        selectors=defaultSelectors,
+        submit=true,
+        waitForElementBefore='',
+        waitForElementAfter='body',
+    }={}
+) => browser => {
+    if (waitForElementBefore) {
+        awaitElement(waitForElementBefore)(browser)
+    }
+
+    browser.setValue(selectors.username, username)
+    browser.setValue(selectors.password, password)
+    if (submit) {
+        browser.click(selectors.submitButton)
+        if (waitForElementAfter) {
+            awaitElement(waitForElementAfter)(browser)
         }
     }
 }
 
-const findElementForDay = (day=(new Date()).getDate(), strategy) => {
-    
+const clickCurrentWindow = (
+    strategy=null,
+    day=new Date().getDate(),
+) => async browser => {
+    try {
+        const elementSelector = await strategy(day, browser)
+        console.log(elementSelector)
+        browser.click(elementSelector)
+    }
+    catch (error) {
+        if (error === false) {
+            console.error('No elements found by strategy.')
+        }
+        else {
+            console.error(error)
+        }
+    }
+    // browser.useXpath().click("//*[contains(text(), 'Something')]")
 }
 
 // const oauth = () => {
-// 
+//
 // }
 
-// e
 
 module.exports = {
     generic,
-    load,
     awaitElement,
+    load,
     wait,
     done,
     auth,
-    findElementForDay,
+    clickCurrentWindow,
 }
