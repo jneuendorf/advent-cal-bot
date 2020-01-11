@@ -35,6 +35,8 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use('/static', express.static(path.join(__dirname, 'static')))
+
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'index.html')))
 app.post('/', passport.authenticate('local', {
     successRedirect: '/cal',
@@ -51,6 +53,15 @@ app.get('/cal', (req, res) => {
     }
 })
 
+app.get('/cal_imgs', (req, res) => {
+    if (req.user) {
+        res.sendFile(path.join(__dirname, 'cal_imgs.html'))
+    }
+    else {
+        res.redirect('/')
+    }
+})
+
 app.get('/1.html', (req, res) => {
     if (req.user) {
         res.sendFile(path.join(__dirname, '1.html'))
@@ -60,4 +71,6 @@ app.get('/1.html', (req, res) => {
     }
 })
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+const server = app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+console.log(server.close)

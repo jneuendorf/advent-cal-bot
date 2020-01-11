@@ -1,3 +1,4 @@
 *.log
+cache/*.js
 node_modules
 tests_output
