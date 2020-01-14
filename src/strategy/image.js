@@ -99,7 +99,7 @@ class ImageStrategy extends BaseStrategy {
             browser.url(`http://localhost:${server.address().port}/show`)
             const data = await this._showAndLabelImages(app, base64Images)
             console.log('writing data to', this.cacheFile)
-            await fs.writeJson(this.cacheFile, data)
+            fs.writeJsonSync(this.cacheFile, data)
             console.log('wrote/updated cache file', this.cacheFile)
             await this._stopServer(server)
 

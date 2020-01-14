@@ -1,25 +1,6 @@
 const generic = callback => callback
 
-const awaitElement = (selector, timeout=5000, kind='visible') => {
-    return browser => {
-        if (kind === 'visible') {
-            browser.waitForElementVisible(selector, timeout)
-        }
-        else if (kind === 'present') {
-            browser.waitForElementPresent(selector, timeout)
-        }
-        else {
-            throw new Error('Invalid argument for "kind".')
-        }
-    }
-}
-
-const load = (url, {waitForBody=true}={}) => browser => {
-    browser.url(url)
-    if (waitForBody) {
-        awaitElement('body')(browser)
-    }
-}
+const load = (url) => browser => browser.url(url)
 
 const wait = time => browser => browser.pause(time)
 
@@ -37,23 +18,15 @@ const auth = (
     {
         selectors=defaultSelectors,
         submit=true,
-        waitForElementBefore='',
-        waitForElementAfter='body',
     }={}
 ) => browser => {
-    if (waitForElementBefore) {
-        awaitElement(waitForElementBefore)(browser)
-    }
-
     browser.setValue(selectors.username, username)
     browser.setValue(selectors.password, password)
     if (submit) {
         browser.click(selectors.submitButton)
-        if (waitForElementAfter) {
-            awaitElement(waitForElementAfter)(browser)
-        }
     }
 }
+
 
 const clickCurrentWindow = (
     strategy=null,
@@ -61,7 +34,7 @@ const clickCurrentWindow = (
 ) => async browser => {
     try {
         const elementSelector = await strategy(day, browser)
-        console.log(elementSelector)
+        // console.log(elementSelector)
         browser.click(elementSelector)
     }
     catch (error) {
@@ -72,7 +45,6 @@ const clickCurrentWindow = (
             console.error(error)
         }
     }
-    // browser.useXpath().click("//*[contains(text(), 'Something')]")
 }
 
 // const oauth = () => {
@@ -82,7 +54,6 @@ const clickCurrentWindow = (
 
 module.exports = {
     generic,
-    awaitElement,
     load,
     wait,
     done,
