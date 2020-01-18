@@ -36,26 +36,32 @@ class ImageStrategy extends BaseStrategy {
         this.setKwargs({imagesSelector, cacheFilename, getUrl})
     }
 
-    // This can't be set in the constructor because 'global.FLOW_NAME' is not
-    // set yet at this time. So we need to postpone getting the global until
-    // runtime.
-    get cacheFile() {
-        if (!this._cacheFile) {
-            this._cacheFile = path.join(
-                CACHE_DIR,
-                `${this.cacheFilename || global.FLOW_NAME}.json`
-            )
-        }
-        return this._cacheFile
-    }
+    // // This can't be set in the constructor because 'global.FLOW_NAME' is not
+    // // set yet at this time. So we need to postpone getting the global until
+    // // runtime.
+    // get cacheFile() {
+    //     if (!this._cacheFile) {
+    //         this._cacheFile = path.join(
+    //             CACHE_DIR,
+    //             `${this.cacheFilename || global.FLOW_NAME}.json`
+    //         )
+    //     }
+    //     return this._cacheFile
+    // }
 
-    async setup(browser) {
+    async setup(browser, flowName) {
         // If this strategy instance is run multiple times in one flow
         // we don't need to do anything after the 1st run.
         if (this.cache) {
             console.log('cache exists')
             return
         }
+
+        const cacheFile = path.join(
+            CACHE_DIR,
+            `${this.cacheFilename || flowName}.json`
+        )
+        console.log('cacheFile', cacheFile)
 
         // const cacheFile = path.join(
         //     CACHE_DIR,
@@ -77,8 +83,8 @@ class ImageStrategy extends BaseStrategy {
         //         }
         //     })
         // })
-        const cacheFileExists = fs.existsSync(this.cacheFile)
-        // console.log('cacheFileExists', cacheFileExists, this.cacheFile)
+        const cacheFileExists = fs.existsSync(cacheFile)
+        // console.log('cacheFileExists', cacheFileExists, cacheFile)
 
         // Create a cache file because it does not already exist.
         if (!cacheFileExists) {
@@ -93,14 +99,14 @@ class ImageStrategy extends BaseStrategy {
                     reject(error)
                 }
             })
-            console.log('originalUrl', originalUrl)
+            // console.log('originalUrl', originalUrl)
 
             const {app, server} = await this._startServer(base64Images)
             browser.url(`http://localhost:${server.address().port}/show`)
             const data = await this._showAndLabelImages(app, base64Images)
-            console.log('writing data to', this.cacheFile)
-            fs.writeJsonSync(this.cacheFile, data)
-            console.log('wrote/updated cache file', this.cacheFile)
+            console.log('writing data to', cacheFile)
+            fs.writeJsonSync(cacheFile, data)
+            console.log('wrote/updated cache file', cacheFile)
             await this._stopServer(server)
 
             // Return to the URL that show the calendar.
@@ -111,7 +117,7 @@ class ImageStrategy extends BaseStrategy {
         }
 
         // Load the cache file.
-        this.cache = fs.readJsonSync(this.cacheFile)
+        this.cache = fs.readJsonSync(cacheFile)
     }
 
     find(day, browser) {

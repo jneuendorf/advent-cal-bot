@@ -12,7 +12,9 @@
         "test:no_auth": "forever start examples_sites/no_auth/index.js && nightwatch spec/no_auth.js && forever stopall",
         "spec:auth": "nightwatch spec/auth.js",
         "spec:no_auth": "nightwatch spec/no_auth.js",
-        "example": "nightwatch src/example.js"
+        "example": "nightwatch src/example.js",
+        "main": "nightwatch src/main.js",
+        "setup": "SETUP=1 nightwatch src/main.js"
     },
     "dependencies": {
         "body-parser": "^1.19.0",

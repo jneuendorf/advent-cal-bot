@@ -22,9 +22,9 @@ class BaseFunction extends AsyncFunction {
 
 
 class BaseStrategy extends BaseFunction {
-    async __call__(day, browser) {
-        await this.setup(browser)
-        return await this.find(day, browser)
+    async __call__(day, browser, flowName) {
+        await this.setup(browser, flowName)
+        return await this.find(day, browser, flowName)
     }
 
     setKwargs(kwargs) {
@@ -39,12 +39,12 @@ class BaseStrategy extends BaseFunction {
     // Sets up any meta data necessary to correctly 'find' the wanted calendar
     // window. This method must be idempotent because it is always called
     // before 'find'.
-    async setup(browser) {
+    async setup(browser, flowName) {
         return
     }
 
     // This method may be asynchronous and is always awaited.
-    find(day, browser) {
+    find(day, browser, flowName) {
         throw new NotImplementedError(
             `Implement 'find' in subclass of BaseStrategy!`
         )

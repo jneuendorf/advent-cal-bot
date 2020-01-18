@@ -1,37 +1,52 @@
-module.exports = {
-    flow(...args) {
-        let flowName, flow
-        if (args.length === 2) {
-            ([flowName, flow] = args)
+
+function flow(flowName, tasks) {
+    return async browser => {
+        for (const func of tasks) {
+            await func(browser, flowName)
+        }
+        browser.end()
+    }
+}
+
+function calendarDefinitionsToFlows(calendars, runSetupOnly) {
+    const result = {}
+    const setupFlow = []
+    for (const [name, config] of Object.entries(calendars)) {
+        const {setup: setupConfigs, flow: tasks} = config
+        if (runSetupOnly) {
+            if (setupConfigs) {
+                for (const setupConfig of setupConfigs) {
+                    const [strategy, ...tasks] = setupConfig
+                    setupFlow.push(
+                        ...tasks,
+                        browser => {
+                            // console.log(strategy, strategy.constructor.name)
+                            strategy.setup(browser, name)
+                        },
+                    )
+                }
+            }
         }
         else {
-            flow = args
+            result[name] = flow(name, tasks)
         }
+    }
 
-        global.FLOW_NAME = flowName
+    if (runSetupOnly) {
+        result.SETUP = flow('SETUP', setupFlow)
+    }
+    console.log(result)
+    return result
+}
 
-        return async browser => {
-            for (const func of flow) {
-                await func(browser)
-            }
-            browser.end()
-        }
-    },
-    // promisify(func) {
-    //     return function(...args) {
-    //         return new Promise((resolve, reject) => {
-    //             try {
-    //                 const result = await func(...args)
-    //                 resolve(result)
-    //             }
-    //             catch (error) {
-    //                 reject(error)
-    //             }
-    //         })
-    //     }
-    // },
-    randId() {
-        // https://gist.github.com/gordonbrander/2230317
-        return Math.round((Math.random() * 36**12)).toString(36)
-    },
+function randId() {
+    // https://gist.github.com/gordonbrander/2230317
+    return Math.round((Math.random() * 36**12)).toString(36)
+}
+
+
+module.exports = {
+    flow,
+    calendarDefinitionsToFlows,
+    randId,
 }

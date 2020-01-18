@@ -10,7 +10,7 @@ class TextStrategy extends BaseStrategy {
         this.setKwargs({windowsSelector, getText})
     }
 
-    find(day, browser) {
+    find(day, browser, flowName) {
         const {windowsSelector, getText} = this
 
         browser.expect.elements(windowsSelector).count.to.equal(24)

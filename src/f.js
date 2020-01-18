@@ -1,8 +1,8 @@
 const generic = callback => callback
 
-const load = (url) => browser => browser.url(url)
+const url = url => browser => browser.url(url)
 
-const wait = time => browser => browser.pause(time)
+const pause = time => browser => browser.pause(time)
 
 const done = () => browser => browser.end()
 
@@ -31,9 +31,9 @@ const auth = (
 const clickCurrentWindow = (
     strategy=null,
     day=new Date().getDate(),
-) => async browser => {
+) => async (browser, flowName) => {
     try {
-        const elementSelector = await strategy(day, browser)
+        const elementSelector = await strategy(day, browser, flowName)
         // console.log(elementSelector)
         browser.click(elementSelector)
     }
@@ -54,8 +54,8 @@ const clickCurrentWindow = (
 
 module.exports = {
     generic,
-    load,
-    wait,
+    url,
+    pause,
     done,
     auth,
     clickCurrentWindow,
